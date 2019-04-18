@@ -1,8 +1,8 @@
 from flask import flash
 from rdflib import RDF, RDFS, Graph, Namespace, OWL, Literal
 from rdflib import URIRef
-from rdftools.const import POT_BASE
-from rdftools.models import RDFClass, RDFProperty
+from effective_disco.rdftools.const import POT_BASE
+from effective_disco.rdftools.models import RDFClass, RDFProperty
 
 
 def build_uriref(string, graph):

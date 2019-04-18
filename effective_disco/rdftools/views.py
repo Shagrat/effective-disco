@@ -8,7 +8,7 @@ from rdflib import ConjunctiveGraph
 from flask import Blueprint, request, render_template, session, redirect, flash, url_for, send_file
 import ontospy
 
-from rdftools.utils import build_classes, build_properties, build_class_info, build_property_info, \
+from effective_disco.rdftools.utils import build_classes, build_properties, build_class_info, build_property_info, \
     add_property_to_class, remove_property_from_class, add_property_to_graph, remove_property_from_graph, \
     add_class_to_graph, remove_class_from_graph, build_uriref
 
