@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3 class="panel-title">Ontology Metadata</h3></div>
+                <div class="panel-body">
+                    {% if annotations %}
+                        <dl>
+                            {% for annotation in annotations %}
+                                <dt>{{ annotation.1 }}</dt>
+                                <dd>{{ annotation.2 }}</dd>
+                            {% endfor %}
+                        </dl>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3 class="panel-title">Namespaces</h3></div>
+                <div class="panel-body">
+                    {% if namespaces %}
+                        <dl>
+                            {% for namespace in namespaces %}
+                                <dt>{{ namespace.0 }}</dt>
+                                <dd><a href="{{ namespace.1 }}">{{ namespace.1 }}</a></dd>
+                            {% endfor %}
+                        </dl>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <form action="{{ url_for('rdftools.load_rdf_schema') }}" enctype="multipart/form-data" method="post">
+                <label for="id_rdffile">JSONLD file upload</label>
+                <input type="file" name="rdffile" id="id_rdffile">
+                <input type="submit">
+            </form>
+
+        </div>
+    </div>
+{% endblock content %}

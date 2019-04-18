@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-12">
+                    <a type="button" class="btn btn-success" href="{{ url_for('rdftools.create_class') }}">Add Class</a>
+                    <div class="panel panel-default">
+                        <div class="panel-heading"><h3 class="panel-title">Classes ({{ classes.count }})</h3></div>
+                        <div class="panel-body">
+                            {% if classes.tree %}
+                                <dl>
+                                    {% for class in classes.tree %}
+                                            <dt><a href="{{ class.get_absolute_url() }}">{{ class }}</a></dt>
+                                            <dd></dd>
+                                    {% endfor %}
+                                </dl>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-12">
+                    <a type="button" class="btn btn-success" href="{{ url_for('rdftools.create_property') }}">Add Property</a>
+                    <div class="panel panel-default">
+                        <div class="panel-heading"><h3 class="panel-title">Properties ({{ properties.count }})</h3></div>
+                        <div class="panel-body">
+                            {% if properties.tree %}
+                                <dl>
+                                    {% for property in properties.tree %}
+                                            <dt><a href="{{ property.get_absolute_url() }}">{{ property }}</a></dt>
+                                            <dd></dd>
+                                    {% endfor %}
+                                </dl>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock content %}

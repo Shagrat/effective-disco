@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+
+{% block exctra_js %}
+    <script>
+        $(function () {
+            var $input = $(".typeahead");
+            $input.typeahead({
+                source: [
+                    {% for attr in available_properties.tree %}
+                        {id: "{{ attr }}", name: "{{ attr }}"}{% if not loop.last %},{% endif %}
+                    {% endfor %}
+                ],
+                autoSelect: true,
+                minLength: 0
+            });
+            $('#delete_class_btn').on('click', function (e) {
+                var $form = $(this).closest('form');
+                e.preventDefault();
+                $('#confirm').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                })
+                    .on('click', '#delete', function (e) {
+                        $form.trigger('submit');
+                    });
+            });
+        });
+    </script>
+{% endblock exctra_js %}
+
+{% block content %}
+    <h1>{{ rdf_class }}</h1>
+    <hr>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">URI</h3>
+                </div>
+                <div class="panel-body">
+                    <code>{{ rdf_class.uriref }}</code>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Label</h3>
+                </div>
+                <div class="panel-body">
+                    {{ rdf_class.label() }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Superclasses</h3>
+                </div>
+                <div class="panel-body">
+                    {% if rdf_class.get_parents() %}
+                        <ul>
+                            {% for parent in rdf_class.get_parents() %}
+                                <li><a href="{{ parent.get_absolute_url() }}">{{ parent }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        No superclasses
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Usage</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="panel-body" style="overflow: auto;">
+                        <p>Instances of {{ rdf_class }} can have the following properties:</p>
+                    </div>
+                    <div>
+                        <form action="" method="post">
+                            <label for="basic-name">Add Attribute to {{ rdf_class }}</label>
+                            <div class="input-group">
+                                <span class="input-group-addon" id="basic-addon3">https://standards.oftrust.net/ontologies/pot.jsonld#</span>
+                                <input type="text" name="property_to_add"
+                                       class="form-control typeahead"
+                                       id="basic-name"
+                                       aria-describedby="basic-addon3"
+                                       autocomplete="off"
+                                >
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit" name="add_property" value="go">Go!</button>
+                                </span>
+                            </div>
+                        </form>
+                    </div>
+                    <table class="table table-bordered" style="overflow: auto;">
+                        <tr class="table-classproperties">
+                            <th>PROPERTY</th>
+                            <th>TYPE</th>
+                            <th>DESCRIPTION</th>
+                            <th>RANGE</th>
+                            <th>ACTION</th>
+                        </tr>
+                        {% if rdf_class.get_properties() %}
+                            <tr class="table-inheritanceinfo">
+                                <th colspan="5" class="treeinfo"><span
+                                        class="label label-default">From class {{ rdf_class }}</span>
+                                </th>
+                            </tr>
+                            {% for attr in rdf_class.get_properties() %}
+                                <tr>
+                                    <td class="firsttd">
+                                        <a class="propcolor" title="{{ attr }}"
+                                           href="{{ attr.get_absolute_url() }}">{{ attr }}</a>
+                                    </td>
+                                    <td class="secondtd">
+                                        <i>rdf:Property<i>
+                                        </i></i></td>
+                                    <td class="thirdtd">
+                                        <span>--</span>
+                                    </td>
+                                    <td class="fourthtd">
+                                        {% if attr.get_supported_range() %}
+                                            {% for item in attr.get_supported_range() %}
+                                                <a title="{{ item }}" href="{{ item.get_absolute_url() }}"
+                                                   class="rdfclass">{{ item }}</a>
+                                            {% endfor %}
+                                        {% else %}
+                                            <i>owl:Thing</i>
+                                        {% endif %}
+                                    </td>
+                                    <td class="fourthtd">
+                                        <form method="post" style="margin: 0">
+                                            <button class="btn btn-default" type="submit" name="property_to_remove" value="{{ attr }}"><span title="remove" class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                        {% for parent in rdf_class.get_parents() %}
+                            {% if parent.get_properties() %}
+                                <tr class="table-inheritanceinfo">
+                                    <th colspan="5" class="treeinfo"><span
+                                            class="label label-default">From class {{ parent }}</span>
+                                    </th>
+                                </tr>
+                                {% for attr in parent.get_properties() %}
+                                    <tr>
+                                        <td class="firsttd">
+                                            <a class="propcolor" title="{{ attr }}"
+                                               href="{{ attr.get_absolute_url() }}">{{ attr }}</a>
+                                        </td>
+                                        <td class="secondtd">
+                                            <i>rdf:Property</i></td>
+                                        <td class="thirdtd">
+                                            <span>--</span>
+                                        </td>
+                                        <td class="fourthtd">
+                                            {% if attr.get_supported_range() %}
+                                                {% for item in attr.get_supported_range() %}
+                                                    <a title="{{ item }}" href="{{ item.get_absolute_url() }}"
+                                                       class="rdfclass">{{ item }}</a>
+                                                {% endfor %}
+                                            {% else %}
+                                                <i>owl:Thing</i>
+                                            {% endif %}
+                                        </td>
+                                        <td>&nbsp;</td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                        {% include 'includes/owl-attributes.html' %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <form method="post">
+                <input type="hidden" name="delete_class" value="delete">
+                <button id="delete_class_btn" class="button btn-danger" type="submit">Delete</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Are you sure?</h4>
+          </div>
+          <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn btn-danger" id="delete">Delete</button>
+                <button type="button" data-dismiss="modal" class="btn">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% endblock content %}

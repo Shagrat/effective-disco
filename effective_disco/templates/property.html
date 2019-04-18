@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>{{ rdf_property }}</h1>
+    <hr>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">URI</h3>
+                </div>
+                <div class="panel-body">
+                    <code>{{ rdf_property.uriref }}</code>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Label</h3>
+                </div>
+                <div class="panel-body">
+                    {{ rdf_property.label() }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Usage</h3>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-bordered" style="overflow: auto;">
+                        <tr class="table-classproperties">
+                            <th>DOMAIN</th>
+                            <th>PROPERTY</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                {% for domain in rdf_property.get_domains() %}
+                                    <a href="{{ domain.get_absolute_url() }}" title="{{ domain }}">{{ domain }}</a>
+                                {% endfor %}
+                            </td>
+                            <td>{{ rdf_property }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <form method="post">
+                <input type="hidden" name="delete_property" value="delete">
+                <button id="delete_property_btn" class="button btn-danger" type="submit">Delete</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Are you sure?</h4>
+          </div>
+          <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn btn-danger" id="delete">Delete</button>
+                <button type="button" data-dismiss="modal" class="btn">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% endblock content %}
+
+{% block exctra_js %}
+    <script>
+        $('#delete_property_btn').on('click', function (e) {
+            var $form = $(this).closest('form');
+            e.preventDefault();
+            $('#confirm').modal({
+                backdrop: 'static',
+                keyboard: false
+            })
+                .on('click', '#delete', function (e) {
+                    $form.trigger('submit');
+                });
+        });
+    </script>
+{% endblock exctra_js %}
